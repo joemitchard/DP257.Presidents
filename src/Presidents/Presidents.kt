@@ -16,41 +16,27 @@ class Presidents {
 
         val dates = presidents.map { it.born }.toList().distinct()
 
-        val uniqueYears = getUniqueDates(dates)
+        val dateCounters = getDateCounters(dates)
 
-        countYearsBorn(uniqueYears, presidents)
+        countYearsBorn(dateCounters, presidents)
 
-        printResults(uniqueYears)
+        printResults(dateCounters)
     }
 
 
-    private fun printResults(countedYears: HashMap<Int, Int?>):Unit {
+    private fun printResults(countedYears: ArrayList<DateCounter>):Unit {
 
-        val sorted = sortByValue(countedYears)
+        val sorted = countedYears.sortedWith(compareBy({ it.counter })).sortedByDescending { it.counter }
 
         println("Year with the highest president births: ${sorted[0].year}, total: ${sorted[0].counter}")
 
-        sorted.find { it.year.equals(2016) }!!.counter = 1
-
-
     }
 
-    fun sortByValue(map: Map<Int, Int?>): List<DateCounter> {
-
-        var sortedList = ArrayList<DateCounter>()
-        
-        map.forEach { sortedList.add(DateCounter(it.key, it.value)) }
-
-        return sortedList.sortedWith(compareBy({ it.counter })).sortedByDescending { it.counter }
-
-    }
-
-    private fun  countYearsBorn(uniqueYears: HashMap<Int, Int?>, presidents: ArrayList<President>) : Unit {
+    private fun  countYearsBorn(dateCounters: ArrayList<DateCounter>, presidents: ArrayList<President>) : Unit {
 
         for ((name, born) in presidents) {
-            uniqueYears.put(born.year, uniqueYears[born.year]?.plus(1)!!)
+            dateCounters.find { it.year.equals(born.year) }!!.counter = dateCounters.find {it.year.equals(born.year)}!!.counter + 1
         }
-
     }
 
     private fun readPresidents(): ArrayList<President> {
@@ -69,18 +55,13 @@ class Presidents {
         return presidents
     }
 
-    private fun getUniqueDates(dates: List<Date>): HashMap<Int, Int?> {
-        val uniqueYears = HashMap<Int, Int?>()
+    private fun getDateCounters(dates: List<Date>): ArrayList<DateCounter> {
 
-        for (date in dates) {
+        val dateCounters = ArrayList<DateCounter>()
 
-            val uniqueDate = uniqueYears.getOrDefault(date.year, null)
+        dates.forEach { dateCounters.add(DateCounter(it.year, 0)) }
 
-            if (uniqueDate == null) {
-                uniqueYears.putIfAbsent(date.year, 0)
-            }
+        return dateCounters
 
-        }
-        return uniqueYears
     }
 }
