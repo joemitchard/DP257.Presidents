@@ -35,31 +35,41 @@ class Presidents {
     private fun  countYearsBorn(dateCounters: ArrayList<DateCounter>, presidents: ArrayList<President>) : Unit {
 
         for ((name, born) in presidents) {
-            dateCounters.find { it.year.equals(born.year) }!!.counter = dateCounters.find {it.year.equals(born.year)}!!.counter + 1
+            dateCounters.find { it.year.equals(born) }!!.counter = dateCounters.find { it.year.equals(born) }!!.counter + 1
         }
     }
 
     private fun readPresidents(): ArrayList<President> {
         val presidents = ArrayList<President>()
 
-        presidents.add(President("Test", Date(2016, 1, 1), Date(2016, 12, 31)))
-        presidents.add(President("Test2", Date(2014, 1, 1), Date(2018, 12, 31)))
-        presidents.add(President("Test3", Date(2014, 1, 1), Date(2018, 12, 31)))
-        presidents.add(President("Test4", Date(2016, 2, 1), Date(2017, 12, 31)))
-        presidents.add(President("Test5", Date(2017, 2, 1), Date(2017, 12, 31)))
-        presidents.add(President("Test6", Date(2015, 2, 1), Date(2017, 12, 31)))
-        presidents.add(President("Test7", Date(2004, 2, 1), Date(2019, 12, 31)))
-        presidents.add(President("Test8", Date(2015, 2, 1), Date(2019, 12, 31)))
-        presidents.add(President("Test8", Date(2016, 2, 1), Date(2019, 12, 31)))
+        val dataList = Data().get()
+
+
+        for (data in dataList) {
+
+            val splitData = data.split(',')
+
+            val born = splitData[1].trim().split(' ').last().toInt()
+            val diedStr = splitData[3].trim().split(' ').last()
+            var died = 0
+
+            if (diedStr != "") {
+                died = diedStr.toInt()
+            }
+
+            presidents.add(President(name = splitData[0], born = born, died = died))
+
+        }
+
 
         return presidents
     }
 
-    private fun getDateCounters(dates: List<Date>): ArrayList<DateCounter> {
+    private fun getDateCounters(dates: List<Int>): ArrayList<DateCounter> {
 
         val dateCounters = ArrayList<DateCounter>()
 
-        dates.forEach { dateCounters.add(DateCounter(it.year, 0)) }
+        dates.forEach { dateCounters.add(DateCounter(it, 0)) }
 
         return dateCounters
 
